@@ -49,15 +49,15 @@ public class AI : MonoBehaviour
         }
     }
 
-    [Task]
+[Task]
     public void PickRandomDestination()
     {
         Vector3 dest = new Vector3(Random.Range(-100, 100), 0, Random.Range(-100, 100));//Variavel de vector3 que passa uma localização aleatória
         agent.SetDestination(dest);                                                     //move o agent para a localização
-        Task.current.Succeed();
+        Task.current.Succeed();                                                         //Indica que o processo foi executa de forma correta
     }
 
-    [Task]
+[Task]
     public void MoveToDestination()                                                     //Debuga o tempo em que o agent está se movendo
     {
         if (Task.isInspected)
@@ -66,6 +66,88 @@ public class AI : MonoBehaviour
         {
             Task.current.Succeed();
         }
+    }
+
+[Task]
+    public void PickDestination(int x, int z)
+    {
+        Vector3 dest = new Vector3(x, 0, z);                                            //Variavel de vector3 que passa uma localização
+        agent.SetDestination(dest);                                                     //move o agent para a localização
+        Task.current.Succeed();                                                         //Indica que o processo foi executa de forma correta
+    }
+
+[Task]
+    public void TargetPlayer()
+    {
+        target = player.transform.position;                                             //Pega a posição do player;
+        Task.current.Succeed();                                                         //Indica que o processo foi executa de forma correta
+    }
+
+[Task]
+    public bool Fire()
+    {
+        GameObject bullet = GameObject.Instantiate(bulletPrefab, bulletSpawn.position, bulletSpawn.rotation); //Instancia o prefab da bullet
+        bullet.GetComponent<Rigidbody>().AddForce(bullet.transform.forward * 2000);                           //Adiciona uma força a bullet de 2000
+
+        return true;                                                                    //Retorna o valor com verdadeiro
+    }
+
+[Task]
+    public void LookAtTarget()
+    {
+        Vector3 direction = target - this.transform.position;
+
+        this.transform.rotation = Quaternion.Slerp(this.transform.rotation, Quaternion.LookRotation(direction), Time.deltaTime * rotSpeed); //Passa a velocidade e suaviza a rotação do npc
+
+        if(Task.isInspected)
+        {
+            Task.current.debugInfo = string.Format("angle={0}", Vector3.Angle(this.transform.forward, direction)); //Informa o angulo
+        }
+
+        if(Vector3.Angle(this.transform.forward, direction) < 5.0f)                     //Se o angulo for menor que 5
+        {
+            Task.current.Succeed();                                                     //Indica que o processo foi executa de forma correta
+        }
+    }
+
+[Task]
+    public bool SeePlayer()                                                                                     //Método que recebe informações de colisão com player e com a parede
+    {
+        Vector3 distance = player.transform.position - this.transform.position;
+        RaycastHit hit;
+        bool seeWall = false;
+        Debug.DrawRay(this.transform.position, distance, Color.red);
+
+        if (Physics.Raycast(this.transform.position, distance, out hit))
+        {
+            if (hit.collider.gameObject.tag == "wall")
+            {
+                seeWall = true;
+            }
+        }
+
+        if(Task.isInspected)
+        {
+            Task.current.debugInfo = string.Format("wall={0}", seeWall);
+        }
+
+        if(distance.magnitude < visibleRange && !seeWall)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+[Task]
+    bool Turn(float angle)                                                                                  //Método que rotaciona para uma posição e a deixa preestabelecida
+    {
+        var p = this.transform.position + Quaternion.AngleAxis(angle, Vector3.up) * this.transform.forward;
+        target = p;
+
+        return true;
     }
 }
 

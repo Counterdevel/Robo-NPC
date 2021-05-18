@@ -19,7 +19,7 @@ public class Drive : MonoBehaviour {
 
         if(Input.GetKeyDown("space"))                                                           //Se apertar a tecla espaço, é instanciado o prefab da bullet na scene com uma força de 2000
         {
-            GameObject bullet = GameObject.Instantiate(bulletPrefab, bulletSpawn.position, bulletSpawn.rotation);
+            GameObject bullet = GameObject.Instantiate(bulletPrefab, bulletSpawn.transform.position, bulletSpawn.transform.rotation);
             bullet.GetComponent<Rigidbody>().AddForce(bullet.transform.forward*2000);
         }
     }
