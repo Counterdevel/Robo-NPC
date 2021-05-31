@@ -1,5 +1,6 @@
 tree("Root")
 	sequence
+		//Deixa uma posição pré determinada e move o robo nessas posições repetidamente
 		PickDestination(-100, -100)									
 		MoveToDestination
 		PickDestination(-100, 100)									

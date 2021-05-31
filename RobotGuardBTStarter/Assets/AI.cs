@@ -149,5 +149,19 @@ public class AI : MonoBehaviour
 
         return true;
     }
+
+[Task]
+    public bool IsHealthLessThan(float health)                                                              //Método que retorna a vida atual do robo
+    {
+        return this.health < health;
+    }
+
+[Task]
+    public bool Explode()                                                                                   //Método que destroi o robo
+    {
+        Destroy(healthBar.gameObject);
+        Destroy(this.gameObject);
+        return true;
+    }
 }
 
